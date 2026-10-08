@@ -31,7 +31,6 @@ The repository includes:
 The stored numerical results are included so that the reported results can be checked without rerunning every experiment.
 
 ---
-
 ## 2. Repository structure
 
 ```text
@@ -47,33 +46,36 @@ weakform-PIELM/
 │
 ├── experiments/
 │   ├── e1_benchmarks.py
-│   ├── e2_sampling.py
+│   ├── e2_timing.py
 │   ├── e3_sensitivity.py
-│   ├── e4_reference.py
+│   ├── e4_pointmass.py
 │   ├── e5_basis_comparison.py
 │   ├── e6_kirchhoff.py
-│   ├── e7_kirchhoff_convergence.py
+│   ├── e7_fem_plate.py
 │   ├── e8_ordering.py
 │   ├── e9_vs_convergence.py
-│   ├── e10_conditioning.py
-│   ├── e11_scattered_quadrature.py
+│   ├── e10_quadrature_free.py
+│   ├── e11_scattered_main.py
 │   ├── e12_cost_and_equivalence.py
 │   ├── e13_additional_validation.py
 │   ├── e14_eigenfunction_error.py
-│   ├── e15_ritz_comparison.py
-│   ├── e16_strong_exact_weight.py
-│   ├── e17_strong_bordered.py
+│   ├── e15_conditioning.py
+│   ├── e16_integration_checks.py
+│   ├── e17_mass_gauss_timing.py
 │   ├── e18_bordered_checks.py
 │   ├── e19_fem_richardson.py
-│   ├── e20_precision_checks.py
+│   ├── e20_plate_residuals.py
 │   └── e21_highprecision_checks.py
 │
 ├── figure_scripts/
+│   ├── fig.py
 │   ├── f1_main_figures.py
 │   ├── f2_appendix_figures.py
 │   ├── f3_kirchhoff_figures.py
-│   └── f4_pointmass_figures.py
+│   ├── f4_pointmass_figures.py
+│   └── f5_additional_figures.py
 │
+├── figures/
 ├── results/
 │   ├── benchmarks.json
 │   ├── cost_equivalence.json
@@ -91,7 +93,6 @@ weakform-PIELM/
 │   ├── P_fem_richardson.csv
 │   └── ...
 │
-├── figures/
 ├── tests.py
 ├── run_all.py
 ├── run_all.bat
