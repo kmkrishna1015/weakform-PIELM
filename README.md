@@ -1,123 +1,102 @@
-# Weak-Form PIELM
+# Weak-Form PIELM for Differential Eigenvalue Problems
 
-Source code, numerical results, and figure scripts for the paper
+This repository contains the numerical implementation and reproducibility data for the paper:
 
-> K. K. Mishra, H. S. Sonawane, R. Mallick, D. K. Harursampath, **Weak-Form PIELM for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form Eig-PIELM**, submitted to *Computer Methods in Applied Mechanics and Engineering*, 2026.
+> **Weak-Form PIELM for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form Eig-PIELM**
 
-Weak-Form PIELM keeps the frozen trial basis, exact null-space enforcement of the essential conditions, and a single reduced generalized eigenproblem, while allowing natural, corner, and concentrated mass/stiffness contributions to enter through variational bilinear forms. For self-adjoint problems with exact integration this gives the ordering `exact <= weak <= strong` of the eigenvalues. This repository contains the implementation of the strong and weak formulations, the numerical experiments, validation studies, and the scripts used to generate the paper figures and tables.
+The code implements a frozen-basis Physics-Informed Extreme Learning Machine (PIELM) framework for differential eigenvalue problems and provides numerical experiments comparing weak-form and strong-form formulations.
 
-## Quick start
+Repository: https://github.com/kmkrishna1015/weakform-PIELM
 
-```text
-# Windows
-py -m pip install -r requirements.txt
-py tests.py
-py run_all.py
+---
 
-# macOS / Linux
-python3 -m pip install -r requirements.txt
-python3 tests.py
-python3 run_all.py
-```
+## 1. Overview
 
-`run_all.py` is cross-platform. On Windows, `run_all.bat` is also provided. On macOS/Linux, `run_all.sh` is an equivalent wrapper.
+The weak-form formulation uses a fixed randomly generated basis and assembles the eigenvalue problem from variational integrals. Essential boundary conditions are imposed exactly through null-space reduction.
 
-Useful options include:
+The repository includes:
 
-```text
-python run_all.py --figures-only
-python run_all.py --only e5_basis_comparison e19_fem_richardson
-python run_all.py --skip-tests
-```
+- weak-form PIELM eigenvalue solvers;
+- strong-form PIELM / collocation comparisons;
+- exact-weight strong-form controls;
+- concentrated-mass and eigenvalue-dependent interface problems;
+- Kirchhoff plate problems with natural and corner boundary conditions;
+- convergence and sensitivity studies;
+- eigenfunction-error calculations;
+- high-precision reference calculations;
+- FEM/Richardson reference calculations;
+- basis-comparison studies;
+- scripts for reproducing the paper figures and numerical tables.
 
-The stored `results/` and `figures/` directories contain outputs from a clean reference run. No GPU is required; `torch` is optional and is used only for the autodiff timing rows of `e2`.
+The stored numerical results are included so that the reported results can be checked without rerunning every experiment.
 
-## Minimal example
+---
 
-```python
-from experiments._common import *
-P = problems()
-p = P["beam_cf"]
-
-from pielm.bases import Bern1D
-r = p.weak(Bern1D(p.L, 23), 70, rcond=1e-12, symmetric=True)
-print(r.omega[:3], rel_err_pct(r.omega, p.exact(r.omega.size))[:3])
-```
-
-## Manuscript map
-
-| Manuscript item | Script(s) | Output |
-|---|---|---|
-| Table 4: accuracy of the seven standard benchmarks | `e13_additional_validation.py` | `additional_validation.json` |
-| Cost comparison | `e2_timing.py` | `timing.json` |
-| Reduced-space dimensions (`dim V_w`, `dim V_s`) | `e13_additional_validation.py` | `additional_validation.json` |
-| Concentrated-mass comparison and solve counts | `e13_additional_validation.py`, `e18_bordered_checks.py` | `additional_validation.json`, `bordered_checks.json` |
-| Mass-beam mode-count timings | `e12_cost_and_equivalence.py`, `e17_mass_gauss_timing.py` | `cost_equivalence.json`, `mass_gauss_timing.json` |
-| Kirchhoff plate results | `e6_kirchhoff.py` | `P_plate.csv`, `P_refs.json`, `P_young_check.json` |
-| Free-edge error-budget table | `e9_vs_convergence.py` | `V_convergence.csv` |
-| Eigenfunction-error table | `e14_eigenfunction_error.py` | `eigenfunction_error.json` |
-| Free-edge residual results | `e20_plate_residuals.py` | `P_residuals*.csv/json` |
-| Min-max ordering check | `e8_ordering.py` | `ordering_check.csv` |
-| Appendix B collocation study | `e3_sensitivity.py`, `e18_bordered_checks.py` | `S2_collocation.csv`, `bordered_checks.json` |
-| Appendix C high-precision reference checks | `e21_highprecision_checks.py` | `HP_bernstein_ritz.csv`, `HP_checks_summary.json` |
-| Appendix C BFS finite-element Richardson check | `e19_fem_richardson.py` | `P_fem_richardson*.csv/json` |
-| Appendix C reference convergence | `e13_additional_validation.py` | `additional_validation.json` |
-| Appendix D basis comparison | `e5_basis_comparison.py` | `B_basis_1d.csv`, `B_basis_2d.csv`, `B_basis_summary.json` |
-| Main mode figures | `figure_scripts/f1_main_figures.py` | `figures/` |
-| Kirchhoff plate figures | `figure_scripts/f3_kirchhoff_figures.py` | `figures/` |
-| Point-mass figures | `figure_scripts/f4_pointmass_figures.py` | `figures/` |
-| Additional numerical figures | `figure_scripts/f5_additional_figures.py` | `figures/` |
-
-The schematic figures `fig_pielm_architecture`, `fig_mass_general`, and `fig_mass_cases` are drawings and are not generated by code.
-
-## Reproducibility notes
-
-- The stored numerical results were generated on a Windows 64-bit system using Python 3.14, NumPy 2.5.3, and SciPy 1.18.1 with a single BLAS thread. Small differences near the double-precision floor can occur across CPUs, BLAS implementations, and Python/NumPy/SciPy versions.
-- Wall-clock timings are machine-dependent. For timing comparisons, use the same hardware and software environment and repeat the runs under similar system load.
-- The un-truncated plate solves at high degree can be ill-conditioned; the paper reports their qualitative behavior rather than treating the individual values as hardware-independent constants.
-- The basis-comparison study uses the seeds and scale parameters specified in `e5_basis_comparison.py`.
-- The repository includes additional numerical studies, including exact-weight strong-form controls, conditioning, quadrature, scattered-point integration, high-precision references, and finite-element cross-checks.
-
-## Formulations and solver
-
-The repository implements the two formulations compared in the paper and the corresponding weak-form solver variants used for accuracy and timing studies:
-
-| Method | Formulation | Eigensolver |
-|---|---|---|
-| `strong` | Published Eig-PIELM construction: PDE residual at uniform interior points, with essential, natural, corner, and interface rows projected out | `scipy.linalg.eig(S, G)` |
-| `weak` | Weak-Form PIELM using Gauss-Legendre Rayleigh-Ritz integration and essential rows only | `scipy.linalg.eig(K, M)` |
-| `weak_sym` | Same weak-form matrices with symmetric reduction for self-adjoint problems | Löwdin-reduced `scipy.linalg.eigh` |
-
-The exact-weight strong formulation in `pielm/strong_exact.py` is provided as a numerical control: with polynomial bases and exact quadrature it corresponds to Rayleigh-Ritz on the constrained space `V_s`. The bordered strong-form construction is provided for the concentrated-mass cases where the interface condition depends on the unknown eigenvalue.
-
-## Layout
+## 2. Repository structure
 
 ```text
-pielm/             Core numerical library and problem definitions
-experiments/       Numerical experiments e1 ... e21
-figure_scripts/    Scripts that read results/ and generate figures/
-results/           Stored numerical results from the reference run
-figures/           Stored figures from the reference run
-tests.py           Software sanity checks
-run_all.py         Cross-platform reproduction driver
-run_all.bat        Windows wrapper
-run_all.sh         macOS/Linux wrapper
-```
-
-## Citation
-
-If you use this code, please cite the associated paper and the repository release. The machine-readable citation information is provided in `CITATION.cff`.
-
-```bibtex
-@article{mishra2026weakpielm,
-  author  = {Mishra, Krishna Kant and Sonawane, Harsh Sanjay and Mallick, Rajnish and Harursampath, Dinesh Kumar},
-  title   = {Weak-Form {PIELM} for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form {Eig-PIELM}},
-  journal = {Computer Methods in Applied Mechanics and Engineering},
-  year    = {2026},
-  note    = {submitted}
-}
-```
-
-## License
-
-MIT, see `LICENSE`.
+weakform-PIELM/
+│
+├── pielm/
+│   ├── basis.py
+│   ├── weak_form.py
+│   ├── strong_form.py
+│   ├── constraints.py
+│   ├── quadrature.py
+│   └── ...
+│
+├── experiments/
+│   ├── e1_benchmarks.py
+│   ├── e2_sampling.py
+│   ├── e3_sensitivity.py
+│   ├── e4_reference.py
+│   ├── e5_basis_comparison.py
+│   ├── e6_kirchhoff.py
+│   ├── e7_kirchhoff_convergence.py
+│   ├── e8_ordering.py
+│   ├── e9_vs_convergence.py
+│   ├── e10_conditioning.py
+│   ├── e11_scattered_quadrature.py
+│   ├── e12_cost_and_equivalence.py
+│   ├── e13_additional_validation.py
+│   ├── e14_eigenfunction_error.py
+│   ├── e15_ritz_comparison.py
+│   ├── e16_strong_exact_weight.py
+│   ├── e17_strong_bordered.py
+│   ├── e18_bordered_checks.py
+│   ├── e19_fem_richardson.py
+│   ├── e20_precision_checks.py
+│   └── e21_highprecision_checks.py
+│
+├── figure_scripts/
+│   ├── f1_main_figures.py
+│   ├── f2_appendix_figures.py
+│   ├── f3_kirchhoff_figures.py
+│   └── f4_pointmass_figures.py
+│
+├── results/
+│   ├── benchmarks.json
+│   ├── cost_equivalence.json
+│   ├── bordered_checks.json
+│   ├── additional_validation.json
+│   ├── eigenfunction_error.json
+│   ├── P_plate.csv
+│   ├── P_refs.json
+│   ├── P_young_check.json
+│   ├── V_convergence.csv
+│   ├── ordering_check.csv
+│   ├── S2_collocation.csv
+│   ├── HP_bernstein_ritz.csv
+│   ├── HP_checks_summary.json
+│   ├── P_fem_richardson.csv
+│   └── ...
+│
+├── figures/
+├── tests.py
+├── run_all.py
+├── run_all.bat
+├── run_all.sh
+├── requirements.txt
+├── CITATION.cff
+├── LICENSE
+└── README.md
