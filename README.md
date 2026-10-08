@@ -1,103 +1,112 @@
-# Weak-Form PIELM for Differential Eigenvalue Problems
+# Weak-Form PIELM
 
-This repository contains the numerical implementation and reproducibility data for the paper:
+Code, data and figure scripts for the paper
 
-> **Weak-Form PIELM for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form Eig-PIELM**
+> K. K. Mishra, H. S. Sonawane, R. Mallick, D. K. Harursampath, **Weak-Form PIELM for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form Eig-PIELM**, submitted to *Computer Methods in Applied Mechanics and Engineering*, 2026.
 
-The code implements a frozen-basis Physics-Informed Extreme Learning Machine (PIELM) framework for differential eigenvalue problems and provides numerical experiments comparing weak-form and strong-form formulations.
+Weak-Form PIELM keeps the frozen trial basis, the exact null-space enforcement of the essential conditions and the single reduced generalized eigenproblem of Eig-PIELM, but lets natural, corner and concentrated mass/stiffness contributions enter through variational bilinear forms. For self-adjoint problems with exact integration this gives the ordering `exact <= weak <= strong` of the eigenvalues. This repository contains the implementation of both formulations, every experiment of the paper, and a script that checks the numbers quoted in the paper against the stored results.
 
-Repository: https://github.com/kmkrishna1015/weakform-PIELM
+## Quick start
+```bash
+git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
+cd YOUR-REPOSITORY
+pip install -r requirements.txt        # numpy, scipy, pandas, matplotlib, mpmath, sympy
+python3 tests.py                       # about 10 s sanity checks
+python3 check_paper_numbers.py         # 171 numbers quoted in the paper vs results/  -> "171 agree"
+python3 run_all.py                     # regenerate everything (about 10 min, one core)
+```
+`run_all.py` is cross-platform. **Windows:** use `py -m pip install -r requirements.txt` and `py run_all.py` (or double-click / run `run_all.bat`);
+on Linux / macOS `./run_all.sh` is an equivalent wrapper. Useful options: `python run_all.py --figures-only`, `python run_all.py --only e5_basis_comparison e19_fem_richardson`, `--skip-tests`.
+`results/` and `figures/` hold the output of one complete clean run (Windows 64-bit, Intel CPU, Python 3.14.0, NumPy 2.5.3, SciPy 1.18.1, single BLAS thread). No GPU is needed; `torch` is optional and only used for the autodiff timing rows of `e2`.
 
----
+## Minimal example
+```python
+from experiments._common import *            # problems(), rel_err_pct, ...
+P = problems(); p = P["beam_cf"]               # cantilever Euler-Bernoulli beam
+from pielm.bases import Bern1D
+r = p.weak(Bern1D(p.L, 23), 70, rcond=1e-12, symmetric=True)   # one reduced symmetric eigenproblem
+print(r.omega[:3], rel_err_pct(r.omega, p.exact(r.omega.size))[:3])
+```
 
-## 1. Overview
+## Manuscript map (what produces what)
+| manuscript item | script(s) | output |
+|---|---|---|
+| Table 1 (accuracy, 7 benchmarks) | `e13_review_items.py` (T2) | `review_items.json` |
+| Cost comparison text (1.09 vs 48.8 ms, 44–50x, 2D cases) | `e2_timing.py` | `timing.json` |
+| Table of spaces (dim V_w, dim V_s) | `e13_review_items.py` (T1) | `review_items.json` |
+| Concentrated-mass table, solve counts | `e13_review_items.py` (T4) | `review_items.json` |
+| Mass-beam mode-count timings, time ratios | `e12_cost_and_equivalence.py`, `e17_mass_gauss_timing.py` | `cost_equivalence.json`, `mass_gauss_timing.json` |
+| Kirchhoff table (n = 16), n = 24 behaviour | `e6_kirchhoff.py` | `P_plate.csv`, `P_refs.json`, `P_young_check.json` |
+| Error-budget table | `e9_vs_convergence.py` | `V_convergence.csv` |
+| Eigenfunction-error table | `e14_eigenfunction_error.py` | `eigenfunction_error.json` |
+| Free-edge residual paragraph (shear / moment) | `e20_plate_residuals.py` | `P_residuals*.csv/json` |
+| Min-max ordering check (Section 3) | `e8_ordering.py` | `ordering_check.csv` |
+| Appendix B (collocation error, Fig. S2) | `e3_sensitivity.py`, `e18_bordered_checks.py` | `S2_collocation.csv`, `bordered_checks.json` |
+| Appendix C: 60-digit Ritz, mass-free limit, Leissa | `e21_highprecision_checks.py` | `HP_bernstein_ritz.csv`, `HP_checks_summary.json` |
+| Appendix C: BFS finite-element Richardson check | `e19_fem_richardson.py` | `P_fem_richardson*.csv/json` |
+| Appendix C: reference convergence n = 22..38 | `e13_review_items.py` (T3) | `review_items.json` |
+| Appendix D: basis comparison table | `e5_basis_comparison.py` | `B_basis_1d.csv`, `B_basis_2d.csv`, `B_basis_summary.json` |
+| Figures `fig_modes_1d`, `fig_modes_helmholtz`, `fig_modes_plate` | `figure_scripts/f1_main_figures.py` | `figures/` |
+| Figures `fig_mass_modeshapes`, `fig_plate_convergence`, `fig_plate_freemodes`, `fig_S2_collocation` | `f4`, `f3`, `f3`, `f2` | `figures/` |
 
-The weak-form formulation uses a fixed randomly generated basis and assembles the eigenvalue problem from variational integrals. Essential boundary conditions are imposed exactly through null-space reduction.
+The schematic figures `fig_pielm_architecture`, `fig_mass_general` and `fig_mass_cases` are drawings and are not generated by code.
+Other files in `results/` and `figures/` (Pareto plots, degree / timing-scaling studies, scattered-point rule, conditioning study, autodiff timings, Q4-FEM baseline)
+belong to earlier drafts or to optional studies and are not used in the submitted version.
 
-The repository includes:
+## Reproducibility notes
+* The numbers quoted in the paper come from the run stored here (Windows, Python 3.14). Numerical values at the round-off floor, the iteration counts of the Brent root search for the concentrated-mass beams (79-111 solves here, 73-110 on a Linux run), the un-truncated plate solves at n >= 20 and all timings change between platforms; the qualitative conclusions do not.
+* Deterministic quantities (dimensions, solve counts, errors above the round-off floor, all plate / eigenfunction / budget values, reference values) are reproduced to the quoted digits by `check_paper_numbers.py`.
+* Errors at the double-precision floor (below about 1e-9 %) change by up to a factor of a few between CPUs / BLAS builds; the checker accepts a factor of 4.
+* Wall-clock times (Table timings, mass-beam timings) depend on the machine; repeated runs on one machine differ by up to about 1.7x, so the checker accepts a factor of 2. Quote timings from your own run. The paper quotes the times of the authors' run; the ratios are stable.
+* The un-truncated plate solves at n >= 20 (columns `weak`, `strong` of `P_plate.csv`) are ill-conditioned and their errors fluctuate between runs (order 1e-1 to 1); the paper only states that they are of order 1e-1.
+* Basis study (`e5`): random-feature results depend on the stated seeds (0..9) and the two scale parameters listed in the script header.
 
-- weak-form PIELM eigenvalue solvers;
-- strong-form PIELM / collocation comparisons;
-- exact-weight strong-form controls;
-- concentrated-mass and eigenvalue-dependent interface problems;
-- Kirchhoff plate problems with natural and corner boundary conditions;
-- convergence and sensitivity studies;
-- eigenfunction-error calculations;
-- high-precision reference calculations;
-- FEM/Richardson reference calculations;
-- basis-comparison studies;
-- scripts for reproducing the paper figures and numerical tables.
+## Formulations and solver
+Only **two formulations** are implemented, reported in **three timing columns**:
 
-The stored numerical results are included so that the reported results can be checked without rerunning every experiment.
+| column (`method=`) | formulation | eigensolver |
+|---|---|---|
+| `strong` | Eig-PIELM, published construction: PDE residual at uniform interior points (unit weights), essential + natural + corner/interface rows projected out | `scipy.linalg.eig(S, G)` — general pencil (S, G are not symmetric) |
+| `weak` | Weak-Form PIELM: Gauss–Legendre Rayleigh–Ritz, essential rows only | **the same** `scipy.linalg.eig(K, M)` — like-for-like comparison |
+| `weak_sym` | Weak-Form PIELM, identical matrices | `scipy.linalg.eigh` on the Löwdin-reduced pencil (`rcond=1e-12`): exploits the symmetry of K, M for self-adjoint problems |
 
----
-## 2. Repository structure
+All three go through one entry point, `pielm.numerics.solve_pencil(A, B, rcond=None, symmetric=False)`.
+`rcond=None` means no truncation (used for `strong` and `weak`); `symmetric=True` is only ever used for the weak form.
+A plain Cholesky `eigh(K, M)` was tested and is *not* used for `weak_sym`: for polynomial bases the Gram matrix is nearly
+singular (cond ~ 1e16) and the beams lose about five digits (5e-8 – 9e-8 %), whereas the Löwdin-reduced solve keeps 1e-12 %.
+The published strong-form construction above is the baseline. For the revision, the strong form with exact Gauss weights (`pielm/strong_exact.py`, i.e. Rayleigh–Ritz on the space V_s) and a bordered one-shot strong pencil (`e13_review_items.py`, `e18_bordered_checks.py`) were added **as controls**; they are not part of the three timing columns.
 
-```text
-weakform-PIELM/
-│
-├── pielm/
-│   ├── basis.py
-│   ├── weak_form.py
-│   ├── strong_form.py
-│   ├── constraints.py
-│   ├── quadrature.py
-│   └── ...
-│
-├── experiments/
-│   ├── e1_benchmarks.py
-│   ├── e2_timing.py
-│   ├── e3_sensitivity.py
-│   ├── e4_pointmass.py
-│   ├── e5_basis_comparison.py
-│   ├── e6_kirchhoff.py
-│   ├── e7_fem_plate.py
-│   ├── e8_ordering.py
-│   ├── e9_vs_convergence.py
-│   ├── e10_quadrature_free.py
-│   ├── e11_scattered_main.py
-│   ├── e12_cost_and_equivalence.py
-│   ├── e13_additional_validation.py
-│   ├── e14_eigenfunction_error.py
-│   ├── e15_conditioning.py
-│   ├── e16_integration_checks.py
-│   ├── e17_mass_gauss_timing.py
-│   ├── e18_bordered_checks.py
-│   ├── e19_fem_richardson.py
-│   ├── e20_plate_residuals.py
-│   └── e21_highprecision_checks.py
-│
-├── figure_scripts/
-│   ├── fig.py
-│   ├── f1_main_figures.py
-│   ├── f2_appendix_figures.py
-│   ├── f3_kirchhoff_figures.py
-│   ├── f4_pointmass_figures.py
-│   └── f5_additional_figures.py
-│
-├── figures/
-├── results/
-│   ├── benchmarks.json
-│   ├── cost_equivalence.json
-│   ├── bordered_checks.json
-│   ├── additional_validation.json
-│   ├── eigenfunction_error.json
-│   ├── P_plate.csv
-│   ├── P_refs.json
-│   ├── P_young_check.json
-│   ├── V_convergence.csv
-│   ├── ordering_check.csv
-│   ├── S2_collocation.csv
-│   ├── HP_bernstein_ritz.csv
-│   ├── HP_checks_summary.json
-│   ├── P_fem_richardson.csv
-│   └── ...
-│
-├── tests.py
-├── run_all.py
-├── run_all.bat
-├── run_all.sh
-├── requirements.txt
-├── CITATION.cff
-├── LICENSE
-└── README.md
+## Layout
+```
+pielm/             library: numerics (Gauss-Legendre, null space, common eigen-solver), bases (Bernstein, Legendre, Chebyshev, monomial,
+                   tanh-ELM, Gaussian RBF), problems (bars, beams, Helmholtz cavity, in-plane plate), pointmass (concentrated masses/springs),
+                   kirchhoff + levy (plates), fem_plate_* (BFS finite-element baseline), strong_exact, scattered
+experiments/       e1 ... e21: each writes results/*.csv|json
+figure_scripts/    f1 ... f5: read results/, write figures/*.pdf
+results/, figures/ stored outputs of a clean run
+tests.py           sanity checks      check_paper_numbers.py   paper-vs-results comparison      run_all.py (+ .sh / .bat wrappers)   full reproduction
+```
+
+## Reproducibility notes
+* Deterministic quantities (dimensions, solve counts, errors above the round-off floor, plate / eigenfunction / budget values, references) are reproduced to the quoted digits.
+* Errors at the double-precision floor (below about 1e-9 %) change by up to a factor of a few between CPUs / BLAS builds; the checker accepts a factor of 4.
+* Wall-clock times depend on the machine; repeated runs on one machine differ by up to about 1.7x, so the checker accepts a factor of 2. Quote timings from your own run. All BLAS libraries are forced to one thread (`pielm/numerics.py`); timings are medians after two discarded warm-up calls.
+* Un-truncated plate solves at n >= 20 (`weak`, `strong` columns of `P_plate.csv`) are ill-conditioned and fluctuate between runs (order 1e-1 to 1).
+* Random-feature results of `e5_basis_comparison.py` use seeds 0..9 and the scale parameters listed in the script header.
+* Three schematic figures of the paper (`fig_pielm_architecture`, `fig_mass_general`, `fig_mass_cases`) are drawings and are not generated by code.
+* Files in `results/` and `figures/` that are not listed in the map above belong to earlier drafts or optional studies.
+
+## Citation
+If you use this code, please cite the paper (see `CITATION.cff`; a Zenodo DOI is attached to each release):
+```bibtex
+@article{mishra2026weakpielm,
+  author  = {Mishra, Krishna Kant and Sonawane, Harsh Sanjay and Mallick, Rajnish and Harursampath, Dinesh Kumar},
+  title   = {Weak-Form {PIELM} for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form {Eig-PIELM}},
+  journal = {Computer Methods in Applied Mechanics and Engineering},
+  year    = {2026},
+  note    = {submitted}
+}
+```
+
+## License
+MIT, see `LICENSE`.
