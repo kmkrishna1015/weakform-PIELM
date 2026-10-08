@@ -1,0 +1,7 @@
+numpy>=1.26
+scipy>=1.11
+pandas>=2.0
+matplotlib>=3.8
+mpmath>=1.3        # 70-digit references (concentrated-mass beams, Levy plate)
+sympy>=1.12        # Hermite element matrices of the BFS FEM baseline
+# torch>=2.2        # OPTIONAL (autodiff timing rows only); not needed for the paper

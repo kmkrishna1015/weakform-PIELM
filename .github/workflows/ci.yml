@@ -1,0 +1,17 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install numpy scipy pandas matplotlib mpmath sympy
+      - run: python tests.py
+      - name: smoke test of the cross-platform driver (a few fast experiments and one figure script)
+        run: python run_all.py --skip-tests --only e1_benchmarks e8_ordering e9_vs_convergence e20_plate_residuals f1_main_figures

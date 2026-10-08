@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated paper."
+title: "Weak-Form PIELM: code for differential eigenvalue problems"
+version: 1.0.0
+date-released: 2026-10-07
+license: MIT
+repository-code: "https://github.com/kmkrishna1015/weakform-PIELM"
+authors:
+  - family-names: Mishra
+    given-names: Krishna Kant
+  - family-names: Sonawane
+    given-names: Harsh Sanjay
+  - family-names: Mallick
+    given-names: Rajnish
+  - family-names: Harursampath
+    given-names: Dinesh Kumar
+preferred-citation:
+  type: article
+  title: "Weak-Form PIELM for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form Eig-PIELM"
+  journal: "Computer Methods in Applied Mechanics and Engineering"
+  year: 2026
+  status: submitted
+  authors:
+    - family-names: Mishra
+      given-names: Krishna Kant
+    - family-names: Sonawane
+      given-names: Harsh Sanjay
+    - family-names: Mallick
+      given-names: Rajnish
+    - family-names: Harursampath
+      given-names: Dinesh Kumar
