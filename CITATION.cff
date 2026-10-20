@@ -13,7 +13,7 @@ authors:
   - family-names: Mallick
     given-names: Rajnish
   - family-names: Harursampath
-    given-names: Dinesh Kumar
+    given-names: DineshKumar
 preferred-citation:
   type: article
   title: "Weak-Form PIELM for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form Eig-PIELM"
@@ -28,4 +28,4 @@ preferred-citation:
     - family-names: Mallick
       given-names: Rajnish
     - family-names: Harursampath
-      given-names: Dinesh Kumar
+      given-names: DineshKumar
