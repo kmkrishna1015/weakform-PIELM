@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cross-platform reproduction driver (Windows, macOS, Linux).
 
-    python run_all.py                       # tests -> experiments e1..e21 -> figures f1..f5
+    python run_all.py                       # tests -> experiments e1..e22 -> figures f1..f5 + fig_plate_natural_rows
     python run_all.py --figures-only        # only the figure scripts (uses the stored results/)
     python run_all.py --only e5_basis_comparison e19_fem_richardson     # selected scripts (name or name.py), run in the given order
     python run_all.py --skip-tests
@@ -14,8 +14,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 EXPERIMENTS = ["e1_benchmarks", "e2_timing", "e3_sensitivity", "e4_pointmass", "e5_basis_comparison", "e6_kirchhoff", "e7_fem_plate", "e8_ordering",
                "e9_vs_convergence", "e10_quadrature_free", "e11_scattered_main", "e12_cost_and_equivalence", "e13_additional_validation", "e14_eigenfunction_error",
                "e15_conditioning", "e16_integration_checks", "e17_mass_gauss_timing", "e18_bordered_checks", "e19_fem_richardson", "e20_plate_residuals",
-               "e21_highprecision_checks"]
-FIGURES = ["f1_main_figures", "f2_appendix_figures", "f3_kirchhoff_figures", "f4_pointmass_figures", "f5_additional_figures"]
+               "e21_highprecision_checks", "e22_natural_row_ablation"]
+FIGURES = ["f1_main_figures", "f2_appendix_figures", "f3_kirchhoff_figures", "f4_pointmass_figures", "f5_additional_figures", "fig_plate_natural_rows"]
 
 
 def run(script, cwd):

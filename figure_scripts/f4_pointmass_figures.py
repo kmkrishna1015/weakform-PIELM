@@ -8,7 +8,7 @@ KEYS = ["H1", "H2", "H3", "H4"]
 
 def fig_summary():
     x = np.arange(4); w = 0.26; fig, axs = plt.subplots(1, 3, figsize=(12.5, 3.6))
-    for i, (m, lab, col) in enumerate((("weak", "Weak Galerkin (1 solve)", GREEN), ("strong_brent", "Eig-PIELM + Brent iteration", BLUE), ("strong_onepass", "Eig-PIELM, single pass ($\\lambda^*=0$)", RED))):
+    for i, (m, lab, col) in enumerate((("weak", "Weak form (1 solve)", GREEN), ("strong_brent", "Eig-PIELM + Brent iteration", BLUE), ("strong_onepass", "Eig-PIELM, single pass ($\\lambda^*=0$)", RED))):
         axs[0].bar(x + (i - 1) * w, [max(T[k][m]["max_err"], FLOOR) for k in KEYS], w, color=col, label=lab)
     axs[0].set_yscale("log"); axs[0].set_ylabel("max. eigenfrequency error, 5 modes (%)"); axs[0].set_ylim(1e-14, 1e4); axs[0].legend(fontsize=7, loc="upper left"); axs[0].set_title("(a) accuracy", loc="left", fontsize=9)
     for i, (m, col) in enumerate((("weak", GREEN), ("strong_brent", BLUE))):
@@ -42,7 +42,7 @@ def fig_modeshapes(mode=1):
         if b.x0: [a.axvline(b.x0 / Lb, color=GREY, ls=":", lw=0.8) for a in axs[:, c]]
         axs[0, c].set_title(key, fontsize=9); axs[1, c].set_xlabel("$x/L$")
         lim = np.abs(b.field(ref.beta[:, j], 40, x, 3) / sc * Lb ** 3).max(); axs[1, c].set_ylim(-1.4 * lim, 1.4 * lim)
-    axs[0, 0].set_ylabel("$w(x)$ (normalised)"); axs[1, 0].set_ylabel("$L^3 w'''(x)$ (normalised)"); axs[0, 0].legend(fontsize=6.5, loc="lower center")
+    axs[0, 0].set_ylabel("$w(x)$ (normalized)"); axs[1, 0].set_ylabel("$L^3 w'''(x)$ (normalized)"); axs[0, 0].legend(fontsize=6.5, loc="lower center")
     fig.tight_layout(); save(fig, "fig_mass_modeshapes")
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 """Main-method results with the grid-free (scattered points + moment-fitted weights) integration rule.
-Recomputes the weak-form columns of Tables 3, 4, 6 and the stage costs; Gauss values are recomputed alongside for a like-for-like check."""
+Supplementary study (not quoted in the paper): recomputes the weak-form columns of the benchmark and plate tables and the stage costs; Gauss values are recomputed alongside for a like-for-like check."""
 import os
 for v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"): os.environ[v] = "1"
 from _common import *

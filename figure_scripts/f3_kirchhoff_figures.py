@@ -38,7 +38,7 @@ def fig_plate_freemodes():
     for j, a in enumerate(axs.ravel()):
         w = ev(r.beta[:, j], 0, 0); w = w / np.abs(w).max(); a.grid(False)
         a.contourf(g, g, w.T, levels=np.linspace(-1, 1, 21), cmap="RdBu_r"); a.contour(g, g, w.T, levels=[0], colors="k", linewidths=0.8)
-        a.set_aspect("equal"); a.set_title(f"mode {j+1}: $\\Omega={r.omega[j]:.4f}$", fontsize=9); a.set_xticks([0, 1]); a.set_yticks([0, 1])
+        a.set_aspect("equal"); a.set_title(f"mode {j+1}: $\\Omega_f={r.omega[j]:.4f}$", fontsize=9); a.set_xticks([0, 1]); a.set_yticks([0, 1])
         bt = r.beta[:, j]; Mx = ev(bt, 2, 0) + NU * ev(bt, 0, 2); Vx = ev(bt, 3, 0) + (2 - NU) * ev(bt, 1, 2)
         res.append((r.omega[j], np.abs(Mx[0, :]).max() / np.abs(Mx).max(), np.abs(Vx[0, :]).max() / np.abs(Vx).max()))
     fig.tight_layout(); save(fig, "fig_plate_freemodes")

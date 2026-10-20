@@ -1,4 +1,4 @@
-"""Appendix D support: (a) scattered-point rule vs Gauss at higher plate degree (n=20, 24) incl. weight-fit time,
+"""Supplementary study (not quoted in the paper): (a) scattered-point rule vs Gauss at higher plate degree (n=20, 24) incl. weight-fit time,
 (b) relative moment residual ||A w - b|| / ||b|| of the minimum-norm moment fit for the cases of Table D.1."""
 import os
 for v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"): os.environ[v] = "1"

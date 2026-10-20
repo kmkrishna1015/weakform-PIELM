@@ -1,4 +1,4 @@
-"""Kirchhoff plates: SSSS (exact), SFSF (Levy, exact), FFFF and CFFF (self-converged Ritz references), weak vs published strong form.
+"""Kirchhoff plates: SSSS (exact), SSFF (Levy, exact; stored under the label SFSF in P_plate.csv), FFFF and CFFF (self-converged Ritz references), weak vs published strong form.
 Also: independent Young beam-function Ritz check of the cantilever plate, and fairness checks of the strong form."""
 from _common import *
 from scipy.optimize import brentq

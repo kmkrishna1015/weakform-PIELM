@@ -43,6 +43,19 @@ class Plate:
         return Res(om, (Z @ V[:, idx]).real if vectors else None,
                    dict(time=time.perf_counter() - t0, red=Z.shape[1], rank=rk, kept=kept, stages=(t1 - t0, t2 - t1, time.perf_counter() - t2)))
 
+    def strong_gauss(self, n=16, ng=None, natural=True, rcond=1e-12):
+        """Exact-weight strong pencil Z'Phi'W nabla^4 Phi Z y = lambda Z'Phi'W Phi Z y with Gauss weights W (Ritz on V_s when natural=True).
+        natural=False keeps the pointwise residual but drops the natural/corner rows (essential rows only): an ABLATION, not a method.
+        Returns (lam, beta, info): ALL eigenvalues of the (non-symmetric) reduced pencil and the coefficient vectors beta = Z T W."""
+        import scipy.linalg as sla
+        ng = ng or n + 12; b = Bern1D(1.0, n); x, w = gl(0, 1.0, ng)
+        A = {c: self._ax(b, x, w, 0, c) for c in (0, 2, 4)}
+        S = np.kron(A[4], A[0]) + 2 * np.kron(A[2], A[2]) + np.kron(A[0], A[4]); G = np.kron(A[0], A[0])
+        Z, rk = null_space_svd(self._rows(b, n + 1, strong=natural))
+        B = Z.T @ G @ Z; eb, Vb = np.linalg.eigh(0.5 * (B + B.T)); keep = eb > rcond * eb[-1]; T = Vb[:, keep] / np.sqrt(eb[keep])
+        lam, W = sla.eig(T.T @ (Z.T @ S @ Z) @ T, check_finite=False)
+        return lam, Z @ (T @ W), dict(red=Z.shape[1], rank=rk, kept=int(keep.sum()), ng=ng)
+
     def ritz_matrices(self, n=12, ng=30):
         """Weak-form K, M (Gauss-Legendre) and the two nested admissible subspaces for the min-max ordering check:
         Zw = essential rows only (weak form), Zs = essential + natural + corner rows (strong form)."""

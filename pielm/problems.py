@@ -290,7 +290,7 @@ def run_method(prob, method, kind="bernstein", n=None, vectors=False, B=None, rc
     Overrides: n (degree), ng (Gauss points, weak), N (uniform points, strong), nb (boundary sampling)."""
     assert method in METHODS3, method
     sym = method == "weak_sym"; method = "weak" if sym else method
-    if sym and rcond is None: rcond = 1e-12      # symmetric solve = Loewdin-reduced eigh with the 1e-12 truncation of the original study
+    if sym and rcond is None: rcond = 1e-12      # symmetric solve = Loewdin-reduced eigh with the 1e-12 truncation used throughout
                                                  # (plain Cholesky eigh(K, M) loses ~5 digits on the beams: Gram matrix cond ~ 1e16)
     d = dict(prob.default); d.update(ov)
     nn = d["n"] if n is None else n

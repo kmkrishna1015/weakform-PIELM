@@ -1,4 +1,4 @@
-"""Section 4.2 support: robustness checks of the bordered one-shot strong pencil (row scaling, exact Gauss weights in A and M, Loewdin truncation)."""
+"""Section 4.3 support: robustness checks of the bordered one-shot strong pencil (row scaling, exact Gauss weights in A and M, Loewdin truncation)."""
 from _common import *
 from scipy.linalg import eig, eigh
 from pielm.pointmass import PointMassBeam, rA, Lb, EI

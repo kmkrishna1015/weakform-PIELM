@@ -22,13 +22,13 @@ def fig_modes_1d():
             if j == 0: ax.set_title(NAME[key].replace("\n", " "), fontsize=9)
             if j == 4: ax.set_xlabel("$x/L$")
     h = [Line2D([], [], color="k", lw=1.6), Line2D([], [], color=COL["weak"], marker="o", mfc="none", ls=""), Line2D([], [], color=COL["strong"], marker="x", ls="")]
-    fig.legend(h, ["Exact", "Weak Galerkin", "Eig-PIELM (published)"], loc="lower center", ncol=3, bbox_to_anchor=(0.5, -0.02))
+    fig.legend(h, ["Exact", "Weak form (present study)", "Eig-PIELM (published)"], loc="lower center", ncol=3, bbox_to_anchor=(0.5, -0.02))
     fig.tight_layout(rect=(0, 0.02, 1, 1)); save(fig, "fig_modes_1d")
 
 
 def _grid2d(nrows, figsize):
     fig = plt.figure(figsize=figsize)
-    gs = fig.add_gridspec(nrows, 5, width_ratios=[1, 1, 0.05, 1, 0.05], wspace=0.55, hspace=0.12)
+    gs = fig.add_gridspec(nrows, 5, width_ratios=[1, 1, 0.05, 1, 0.05], wspace=0.75, hspace=0.12)
     axs = np.array([[fig.add_subplot(gs[i, j]) for j in (0, 1, 3)] for i in range(nrows)])
     for i in range(nrows):
         for j in (1, 2): axs[i, j].sharey(axs[i, 0])
@@ -46,7 +46,7 @@ def fig_modes_helmholtz():
     fig, axs, cax1, cax2 = _grid2d(5, (8.6, 8.4))
     for j in range(5):
         ue = p.exact_shape(j, X, Y); un = p.eval_shape(*B, r.beta[:, j], X, Y); s = np.sum(un * ue) / np.sum(un * un); un = s * un
-        for c, (f, ttl) in enumerate(((ue, "Exact"), (un, "Weak Galerkin"), (np.abs(un - ue), "|difference|"))):
+        for c, (f, ttl) in enumerate(((ue, "Exact"), (un, "Weak form (present study)"), (np.abs(un - ue), "|difference|"))):
             ax = axs[j, c]; ax.grid(False)
             if c < 2: im = ax.contourf(X, Y, f.T, levels=np.linspace(-1, 1, 21), cmap="RdBu_r", extend="both")
             else: imd = ax.contourf(X, Y, np.maximum(f.T, 1e-14), levels=np.logspace(-13, -6, 15), norm=matplotlib.colors.LogNorm(1e-13, 1e-6), cmap="viridis", extend="both")
@@ -54,7 +54,7 @@ def fig_modes_helmholtz():
             if j == 0: ax.set_title(ttl)
             if c == 0: ax.set_ylabel(f"mode {j+1}\n$y$ (m)")
             if j == 4: ax.set_xlabel("$x$ (m)")
-    fig.colorbar(im, cax=cax1, label="$P(x,y)$"); fig.colorbar(imd, cax=cax2, label="|error|")
+    fig.colorbar(im, cax=cax1, label="$P(x,y)$"); cax1.yaxis.set_label_position("left"); cax1.yaxis.labelpad = 4; cax2.yaxis.labelpad = 6; fig.colorbar(imd, cax=cax2, label="|error|")
     save(fig, "fig_modes_helmholtz")
 
 def fig_modes_plate():
@@ -70,10 +70,10 @@ def fig_modes_plate():
             ax = axs[j, c]; ax.grid(False); ax.set_aspect("equal")
             if c < 2: im = ax.contourf(X, Y, fields[c].T, levels=np.linspace(0, 1, 21), cmap="magma")
             else: imd = ax.contourf(X, Y, fields[c].T, levels=np.logspace(-13, -5, 17), norm=matplotlib.colors.LogNorm(1e-13, 1e-5), cmap="viridis", extend="both")
-            if j == 0: ax.set_title(["Exact $|\\mathbf{u}|$", "Weak Galerkin $|\\mathbf{u}|$", "|difference|"][c])
+            if j == 0: ax.set_title(["Exact $|\\mathbf{u}|$", "Weak form (present study) $|\\mathbf{u}|$", "|difference|"][c])
             if c == 0: ax.set_ylabel(f"mode {j+1}\n$y$ (m)")
             if j == 5: ax.set_xlabel("$x$ (m)")
-    fig.colorbar(im, cax=cax1, label="normalised $|\\mathbf{u}|$"); fig.colorbar(imd, cax=cax2, label="|error|")
+    fig.colorbar(im, cax=cax1, label="normalized $|\\mathbf{u}|$"); cax1.yaxis.set_label_position("left"); fig.colorbar(imd, cax=cax2, label="|error|")
     save(fig, "fig_modes_plate")
 
 def fig_pareto():

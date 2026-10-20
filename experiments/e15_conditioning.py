@@ -1,4 +1,4 @@
-"""Appendix E: basis-equivalence control with conditioning evidence.
+"""Supplementary study (cf. Appendix D): basis-equivalence control with conditioning evidence.
 For Bernstein / Legendre / Chebyshev / monomial bases of the SAME degree n (same polynomial space), record
   kappa(M_red), kappa(K_red)  (2-norm condition numbers of the reduced matrices Z'MZ, Z'KZ exactly as used in Algorithm 2),
   the same after symmetric Jacobi scaling D^-1/2 A D^-1/2 (removes pure column scaling),
