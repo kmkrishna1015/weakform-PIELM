@@ -2,7 +2,7 @@
 
 Code, data and figure scripts for the paper
 
-> K. K. Mishra, H. S. Sonawane, R. Mallick, DK. Harursampath, **Weak-Form PIELM for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form Eig-PIELM**, submitted to *Computer Methods in Applied Mechanics and Engineering*, 2026.
+> K. K. Mishra, H. Sonavane, R. Mallick, DK. Harursampath, **Weak-Form PIELM for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form Eig-PIELM**, submitted to *Computer Methods in Applied Mechanics and Engineering*, 2026.
 
 Weak-Form PIELM keeps the frozen trial basis, the exact null-space enforcement of the essential conditions and the single reduced generalized eigenproblem of Eig-PIELM, but lets natural, corner and concentrated mass/stiffness contributions enter through variational bilinear forms. For self-adjoint problems with exact integration this gives the ordering `exact <= weak <= strong` of the eigenvalues. The repository contains both formulations, every experiment of the paper, and the figure scripts.
 
@@ -91,7 +91,7 @@ run_all.py         full reproduction (+ run_all.sh / run_all.bat wrappers)
 Please cite the paper and the archived code release (see `CITATION.cff`; the Zenodo DOI of each release is listed on the repository page).
 ```bibtex
 @article{mishra2026weakpielm,
-  author  = {Mishra, Krishna Kant and Sonawane, Harsh Sanjay and Mallick, Rajnish and Harursampath, DineshKumar},
+  author  = {Mishra, Krishna Kant and Sonavane, Harsh and Mallick, Rajnish and Harursampath, DineshKumar},
   title   = {Weak-Form {PIELM} for Differential Eigenvalue Problems: A Frozen-Basis Variational Framework and Structural Comparison with Strong-Form {Eig-PIELM}},
   journal = {Computer Methods in Applied Mechanics and Engineering},
   year    = {2026},
