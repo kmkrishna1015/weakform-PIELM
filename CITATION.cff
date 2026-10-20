@@ -8,8 +8,8 @@ repository-code: "https://github.com/kmkrishna1015/weakform-PIELM"
 authors:
   - family-names: Mishra
     given-names: Krishna Kant
-  - family-names: Sonawane
-    given-names: Harsh Sanjay
+  - family-names: Sonavane
+    given-names: Harsh
   - family-names: Mallick
     given-names: Rajnish
   - family-names: Harursampath
@@ -23,8 +23,8 @@ preferred-citation:
   authors:
     - family-names: Mishra
       given-names: Krishna Kant
-    - family-names: Sonawane
-      given-names: Harsh Sanjay
+    - family-names: Sonavane
+      given-names: Harsh
     - family-names: Mallick
       given-names: Rajnish
     - family-names: Harursampath
